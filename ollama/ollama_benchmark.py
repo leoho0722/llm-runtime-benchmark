@@ -66,6 +66,7 @@ class OllamaClient:
                 eval_count = int(value)
                 formated_response[key] = eval_count
             elif (key == "eval_duration"):
+                value = float(value) if value else 0.00
                 eval_duration = float(value)/(10**9)
                 formated_response[key] = eval_duration
 
@@ -80,12 +81,12 @@ class OllamaClient:
         prompt_eval_rate = (prompt_eval_count / prompt_eval_duration)
         eval_count = formated_response["eval_count"]
         eval_duration = formated_response["eval_duration"]
-        eval_rate = (eval_count / eval_duration)
         if eval_count == 1:
             self._time_to_first_token = eval_duration
             return
+        eval_rate = (eval_count / eval_duration)
 
-        print("\n")
+        print("\n\n========== Benchmark Results ==========\n")
         print(f"model:                {model}")
         print(f"total duration:       {total_duration :.2f} s")
         print(f"load duration:        {load_duration :.2f} s")
@@ -142,6 +143,14 @@ async def main(args: argparse.Namespace):
     num_ctx: int = args.num_ctx
     num_predict: Optional[int] = args.num_predict
     ollama_host: str = args.ollama_host
+
+    print("========== Benchmark Config ==========\n")
+    print(f"Model: {model}")
+    print(f"Prompt: {prompt}")
+    print(f"num_ctx: {num_ctx}")
+    print(f"num_predict: {num_predict}")
+    print(f"ollama_host: {ollama_host}")
+    print()
 
     max_new_tokens: List[int] = [1, num_predict]
 
